@@ -1,10 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useUser } from '../../UserContext'; 
 import { Link } from 'react-router-dom';
 import '../styles/styles.css';  // Assurez-vous que vos styles sont correctement liés
 
 
 
+
 export default function Navbar() {
+  const [etatDeConnexion, setEtatDeConnexion] = useState(false);
+  const { setUser } = useUser();
+
+
+
+
   useEffect(() => {
     let sidebar = document.querySelector(".sidebar");
     let closeBtn = document.querySelector("#btn");
@@ -25,6 +33,19 @@ export default function Navbar() {
         searchBtn.removeEventListener("click", toggleSidebar);
       };
     }
+
+
+    fetch('http://localhost:3000/api/verifier-connexion', {
+      credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.etatDeConnexion) {
+        setEtatDeConnexion(true); 
+      };
+      console.log(data);
+    })
+    .catch(error => console.error('Erreur lors de la vérification de la connexion :', error));
   }, []);
 
   function menuBtnChange() {
@@ -37,8 +58,26 @@ export default function Navbar() {
     }
   }
 
-  
 
+  const handleDeconnexion = async (event) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/deconnexion', {
+        method: 'POST', 
+        credentials: 'include',
+      });
+  
+      if (response.ok) {
+        localStorage.removeItem('userId');
+        setUser({ name: '', accountId: '' });
+        setEtatDeConnexion(false);
+        window.location.reload(); // Rafraîchir la page après la déconnexion
+      } else {
+        throw new Error('Quelque chose a mal tourné lors de la déconnexion.');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion :', error);
+    }
+  };
 
   return (
     <React.Fragment>
@@ -113,12 +152,11 @@ export default function Navbar() {
         </li>
         <li className="profile">
           <div className="profile-details">
-            <i className='bx bx-export'></i>
             <div className="name_job">
               <div className="name">Logout</div>
             </div>
           </div>
-          <i className='bx bx-log-out' id="log_out"></i>
+          <i className='bx bx-log-out' id="log_out" onClick={handleDeconnexion}></i>
         </li>
       </ul>
     </div>

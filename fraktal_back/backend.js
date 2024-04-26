@@ -2,6 +2,9 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors'); 
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
+
 
 
 app.use(cors({
@@ -22,9 +25,33 @@ mongoose.connect(uri)
 
 const conn = mongoose.connection;
 
+app.use(session({
+  secret: 'test',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false,
+    httpOnly: true,
+    maxAge: 86400000
+  },
+  store: MongoStore.create({ mongoUrl: uri })
+}));
 
+app.use((req, res, next) => {
+  console.log('Session Access:', req.sessionID);
+  console.log('Session Data:', req.session);
+  next();
+});
 
-
+function checkAuth(req, res, next) {
+  console.log("Session Data in checkAuth:", req.session);
+  if (req.session.userId && req.session.username) {
+      next();
+  } else {
+      console.log("Session or userId not found in checkAuth");
+      res.status(401).send({ message: "Non authentifié" });
+  }
+}
 
 
 
@@ -84,10 +111,56 @@ app.post('/api/inscription', async (req, res) => {
 });
 
 
+app.post('/api/connexion', async (req, res) => {
+  const {username, password} = req.body;
 
+  if (!username || !password){
+    res.status(400).send({erreur : "!!!!!     Nous n'avons pas recu les id et le password     !!!!!"});
+    return;
+  };
 
+  try{
+    const utilisateur = await Inscription.findOne({username: username});
+    if (!utilisateur) {
+      return res.status(400).send({ erreur : "!!!!!     Impossible de trouver l'utilisateur     !!!!!"});
+    }
 
+    if (utilisateur.password != password) {
+      return res.status(400).send({erreur : "!!!!!     Les mots de passe ne correspondent pas      !!!!!"});
+    }
 
+    if (utilisateur.username == username && utilisateur.password == password) {
+      req.session.userId = utilisateur._id;
+      req.session.username = utilisateur.username;
+
+      res.send({
+        message: "Connexion réussie !",
+        etatDeConnexion: true,
+        userId: req.session.userId,
+        username: req.session.username,
+      });
+    } else{
+      res.status(400).send({erreur : "Echec de la connexion", etatDeConnexion: false});
+    }
+
+  }catch (erreur) {
+    console.error(erreur);
+    res.status(500).send({ erreur: "Erreur du serveur" });
+  }
+});
+
+app.get('/api/verifier-connexion', async (req, res) => {
+  if (req.session.userId) {
+    res.send({ etatDeConnexion : true });
+  } else {
+    res.send({ etatDeConnexion : false });
+  }
+});
+
+app.post('/api/deconnexion', (req, res) => {
+  req.session.destroy(); 
+  res.send({ message: "Déconnexion réussie" });
+});
 
 
 

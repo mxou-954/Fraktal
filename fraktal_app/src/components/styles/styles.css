@@ -113,7 +113,7 @@ html{
   .btn {
     padding: 10px 35px;
     cursor: pointer;
-    background-color: #030303;
+    background-color: #001600;
     border-radius: 6px;
     border: 2px solid #212121;
     box-shadow: 6px 6px 10px rgba(0,0,0,1),
@@ -368,6 +368,8 @@ html{
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
+    padding-top: 10px;
+    padding-left: 10%;
     
   }
   .sidebar li.profile .name,
@@ -395,7 +397,7 @@ html{
     inset -1px -1px 5px rgba(255, 255, 255, 0.6);
   }
   .sidebar.open .profile #log_out {
-    width: 50px;
+    width: 50%;
     background: none;
     box-shadow: inset 2px 2px 10px rgb(0, 0, 0),
     inset -1px -1px 5px rgba(255, 255, 255, 0.6);
@@ -424,4 +426,43 @@ html{
       display: none;
     }
   }
-  
+
+  .profile .name{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .deconnexion{
+    padding: 15px;
+    border-radius: 12px;
+    align-items: center;
+    text-decoration: none;
+    transition: all 0.4s ease;
+    background: #2c0000c0;
+    color: white;
+    box-shadow: inset 2px 2px 10px rgba(0,0,0,1),
+    inset -1px -1px 5px rgba(255, 255, 255, 0.6);
+  }
+
+  .deconnexion:hover {
+    transform: scale(1.05);
+    box-shadow: 6px 6px 10px rgba(0,0,0,1),
+    1px 1px 10px rgba(255, 255, 255, 0.6),
+    inset 2px 2px 10px rgba(0,0,0,1),
+    inset -1px -1px 5px rgba(255, 255, 255, 0.6);
+  }
+
+  .deconnexion:focus {
+    transform: scale(1.05);
+    box-shadow: 6px 6px 10px rgba(0,0,0,1),
+    1px 1px 10px rgba(255, 255, 255, 0.6),
+    inset 2px 2px 10px rgba(0,0,0,1),
+    inset -1px -1px 5px rgba(255, 255, 255, 0.6);
+  }
+
+  .title{
+    color: white;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+  }

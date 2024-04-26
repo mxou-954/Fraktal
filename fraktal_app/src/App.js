@@ -1,6 +1,7 @@
 import './App.css';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { UserProvider } from './UserContext';
 
 import "./components/styles/styles.css";
 
@@ -11,6 +12,7 @@ import Navbar from "./components/navbar/navbar";
 
 function App() {
   return (
+    <UserProvider>
     <div className="App">
       <Router>
       <Navbar></Navbar>
@@ -23,6 +25,7 @@ function App() {
         </main>
       </Router>
     </div>
+    </UserProvider>
   );
 }
 
